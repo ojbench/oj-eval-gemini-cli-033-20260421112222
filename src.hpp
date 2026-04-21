@@ -235,7 +235,7 @@ public:
     /**
      * TODO Destructor
      */
-    virtual ~list() {
+    ~list() {
         clear();
     }
     /**
@@ -311,20 +311,20 @@ public:
     /**
      * checks whether the container is empty.
      */
-    virtual bool empty() const {
+    bool empty() const {
         return _size == 0;
     }
     /**
      * returns the number of elements
      */
-    virtual size_t size() const {
+    size_t size() const {
         return _size;
     }
 
     /**
      * clears the contents
      */
-    virtual void clear() {
+    void clear() {
         while (_size > 0) {
             pop_back();
         }
@@ -334,7 +334,7 @@ public:
      * return an iterator pointing to the inserted value
      * throw if the iterator is invalid
      */
-    virtual iterator insert(iterator pos, const T &value) {
+    iterator insert(iterator pos, const T &value) {
         if (pos.container != this) throw invalid_iterator();
         node *new_node = new node(value);
         insert(pos.ptr, new_node);
@@ -346,7 +346,7 @@ public:
      * the last element, end() will be returned. throw if the container is empty,
      * the iterator is invalid
      */
-    virtual iterator erase(iterator pos) {
+    iterator erase(iterator pos) {
         if (pos.container != this || pos.ptr == &head) throw invalid_iterator();
         node_base *next_node = pos.ptr->next;
         erase(pos.ptr);
