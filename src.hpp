@@ -218,6 +218,20 @@ public:
             push_back(*it);
         }
     }
+    list(list &&other) noexcept : _size(other._size) {
+        if (other._size > 0) {
+            head.next = other.head.next;
+            head.prev = other.head.prev;
+            head.next->prev = &head;
+            head.prev->next = &head;
+            other.head.next = &other.head;
+            other.head.prev = &other.head;
+            other._size = 0;
+        } else {
+            head.next = &head;
+            head.prev = &head;
+        }
+    }
     /**
      * TODO Destructor
      */
@@ -232,6 +246,21 @@ public:
         clear();
         for (const_iterator it = other.cbegin(); it != other.cend(); ++it) {
             push_back(*it);
+        }
+        return *this;
+    }
+    list &operator=(list &&other) noexcept {
+        if (this == &other) return *this;
+        clear();
+        if (other._size > 0) {
+            _size = other._size;
+            head.next = other.head.next;
+            head.prev = other.head.prev;
+            head.next->prev = &head;
+            head.prev->next = &head;
+            other.head.next = &other.head;
+            other.head.prev = &other.head;
+            other._size = 0;
         }
         return *this;
     }
@@ -261,6 +290,9 @@ public:
     iterator begin() {
         return iterator(head.next, this);
     }
+    const_iterator begin() const {
+        return const_iterator(head.next, this);
+    }
     const_iterator cbegin() const {
         return const_iterator(head.next, this);
     }
@@ -269,6 +301,9 @@ public:
      */
     iterator end() {
         return iterator(&head, this);
+    }
+    const_iterator end() const {
+        return const_iterator(&head, this);
     }
     const_iterator cend() const {
         return const_iterator(&head, this);
@@ -334,7 +369,7 @@ public:
         delete static_cast<node*>(p);
     }
     /**
-     * inserts an element to the beginning.
+     * adds an element to the beginning.
      */
     void push_front(const T &value) {
         insert(head.next, new node(value));
@@ -347,6 +382,28 @@ public:
         if (_size == 0) throw container_is_empty();
         node_base *p = erase(head.next);
         delete static_cast<node*>(p);
+    }
+
+    /**
+     * splice elements from another list
+     */
+    void splice(iterator pos, list &other) {
+        if (this == &other) return;
+        if (other.empty()) return;
+        if (pos.container != this) throw invalid_iterator();
+
+        node_base *first = other.head.next;
+        node_base *last = other.head.prev;
+
+        first->prev = pos.ptr->prev;
+        last->next = pos.ptr;
+        pos.ptr->prev->next = first;
+        pos.ptr->prev = last;
+
+        _size += other._size;
+        other.head.next = &other.head;
+        other.head.prev = &other.head;
+        other._size = 0;
     }
 };
 

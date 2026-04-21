@@ -3,4 +3,4 @@ project(list_test)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(code 3.cpp)
+add_executable(code 2.cpp)
